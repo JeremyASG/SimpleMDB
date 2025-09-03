@@ -9,7 +9,7 @@ public class App
 
     public App()
     {
-        string host = "http://127.0.0.1:8080";
+        string host = "http://127.0.0.1:8080/";
         server = new HttpListener();
         server.Prefixes.Add(host);
 
