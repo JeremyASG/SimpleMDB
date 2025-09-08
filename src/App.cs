@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Net;
 using System.Text;
 
@@ -6,7 +7,7 @@ namespace SimpleMDB;
 public class App
 {
     private HttpListener server;
-
+    private HttpRouter router;
     public App()
     {
         string host = "http://127.0.0.1:8080/";
@@ -14,6 +15,12 @@ public class App
         server.Prefixes.Add(host);
 
         Console.WriteLine("Server listening on..." + host);
+
+        var authController = new AuthController();
+
+        router = new HttpRouter();
+
+        router.AddGet("/", authController.LandingPageGet);
     }
 
     public async Task Start()
@@ -37,18 +44,9 @@ public class App
     {
         var req = ctx.Request;
         var res = ctx.Response;
+        var options = new Hashtable();
 
-        if (req.HttpMethod == "GET" && req.Url!.AbsolutePath == "/")
-        {
-            string html = "Hello!";
-            byte[] content = Encoding.UTF8.GetBytes(html);
+        await router.Handle(req, res, options);
 
-            res.StatusCode = (int)HttpStatusCode.OK;
-            res.ContentEncoding = Encoding.UTF8;
-            res.ContentType = "text/html";
-            res.ContentLength64 = content.LongLength;
-            await res.OutputStream.WriteAsync(content);
-            res.Close();
-        }
     }
 }
