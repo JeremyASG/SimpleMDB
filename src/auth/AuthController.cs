@@ -13,7 +13,7 @@ public class AuthController
 
     public async Task LandingPageGet(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {
-                    string html = "Hello!";
+                    string html = HtmlTemplates.Base("SimpleMDB", "Landing Page",  "Hello, World!");
             byte[] content = Encoding.UTF8.GetBytes(html);
 
             res.StatusCode = (int)HttpStatusCode.OK;
