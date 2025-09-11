@@ -1,11 +1,10 @@
-
-
 using System.Collections;
 using System.Net;
-
 namespace SimpleMDB;
+
 public class HttpRouter
 {
+    
     public static readonly int RESPONSE_NOT_SENT_YET = 795;
     private List<HttpMiddleware> middlewares;
     private List<(string, string, HttpMiddleware[] middlewares)> endpoints;

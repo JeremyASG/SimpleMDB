@@ -6,15 +6,31 @@ namespace SimpleMDB;
 
 public class AuthController
 {
-    public AuthController()
+    private IUSerService userService;
+    public AuthController(IUSerService userService)
     {
+        this.userService = userService;
 
     }
 
     public async Task LandingPageGet(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {
-        string html = HtmlTemplates.Base("SimpleMDB", "Landing Page", "Hello, World2!");
-        await HttpUtils.Respond(req, res, options, (int) HttpStatusCode.OK, html);
+        string html = $@"
+        <nav>
+          <ul>
+            <li><a href= ""/register"">Register</a></li>
+            <li><a href= ""/login"">Login</a></li>
+            <li><a href= ""/logout"">Logout</a></li>
+            <li><a href= ""/users"">Users</a></li>
+            <li><a href= ""/actors"">Actors</a></li>
+            <li><a href= ""/movies"">Movies</a></li>
+          </ul>
+
+        </nav>
+        "; 
+
+        string content = HtmlTemplates.Base("SimpleMDB", "Landing Page", html);
+        await HttpUtils.Respond(req, res, options, (int) HttpStatusCode.OK, content);
 
     }
 }
