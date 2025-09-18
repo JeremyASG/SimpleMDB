@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Net;
 using System.Reflection.Metadata;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace SimpleMDB;
@@ -40,8 +41,8 @@ public class App
 
         while (server.IsListening)
         {
-            var ctx = server.GetContext();
-            await HandleContextAsync(ctx);
+            var ctx = await server.GetContextAsync();
+            _ = HandleContextAsync(ctx);
         }
     }
 
@@ -56,8 +57,53 @@ public class App
         var req = ctx.Request;
         var res = ctx.Response;
         var options = new Hashtable();
+        DateTime startTime = DateTime.UtcNow;
 
-        await router.Handle(req, res, options);
+
+
+        try
+        {
+            res.StatusCode = HttpRouter.RESPONSE_NOT_SENT_YET;
+
+            await router.Handle(req, res, options);
+        }
+
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+            if (res.StatusCode == HttpRouter.RESPONSE_NOT_SENT_YET)
+            {
+                res.StatusCode = (int)HttpStatusCode.InternalServerError;
+                res.Close();
+
+                if (Environment.GetEnvironmentVariable("DEVELOMENT_MOVE") != "Production")
+                {
+                    string html = HtmlTemplates.Base("SimpleMDB", "Error Page", ex.ToString());
+                    await HttpUtils.Respond(req, res, options, (int)HttpStatusCode.InternalServerError, html);
+                }
+                else
+                {
+                    string html = HtmlTemplates.Base("SimpleMDB", "Error Page", "An error occurred.");
+                    await HttpUtils.Respond(req, res, options, (int)HttpStatusCode.InternalServerError, html);
+                }
+            }
+
+        }
+        finally
+        {
+            if (res.StatusCode == HttpRouter.RESPONSE_NOT_SENT_YET)
+            {
+                string html = HtmlTemplates.Base("SimpleMDB", "Not Found Page ", "Resource was not found.");
+                await HttpUtils.Respond(req, res, options, (int)HttpStatusCode.NotFound, html);
+            }
+
+            string rid = req.Headers["X-Request-ID"] ?? "0";
+
+            TimeSpan elapsedTime = DateTime.UtcNow - startTime;
+
+            Console.WriteLine($"Request {rid}: {req.HttpMethod} {req.RawUrl} from {req.RemoteEndPoint} --> {res.StatusCode} ({res.ContentLength64} bytes) in {elapsedTime.TotalMilliseconds}ms");
+
+        }
 
     }
 }
