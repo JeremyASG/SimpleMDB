@@ -1,10 +1,12 @@
+using System.Dynamic;
+
 namespace SimpleMDB;
 
 public class HtmlTemplates
 {
-    public static string Base(string title, string header, string content)
-    {
-        return $@"
+  public static string Base(string title, string header, string content, string message = "")
+  {
+    return $@"
         <html>
           <head>
             <title>{title}</title>
@@ -13,11 +15,13 @@ public class HtmlTemplates
             <script type=""text/javascript"" src=""scripts/main.js"" defer></script>
           </head>
           <body>
-            <h1>{header}</h1>
-            <div>{content}</div>
+            <h1 class=""header"">{header}</h1>
+            <div class=""content"">{content}</div>
+            <div class=""message"">{message}</div>
           </body>
 
         </html>
         ";
-    }
+  }
 }
+  
