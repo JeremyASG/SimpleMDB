@@ -71,7 +71,7 @@ public class MovieController
 
     string title = formData["title"] ?? "";
     int year = int.TryParse(formData["year"], out int y) ? y : DateTime.Now.Year;
-    string description = req.QueryString["description"] ?? "";
+    string description = formData["description"] ?? "";
     float rating = float.TryParse(formData["rating"], out float r) ? r : 5F;
 
     Movie newMovie = new Movie(0, title, year, description, rating);
@@ -167,8 +167,9 @@ public class MovieController
     string title = formData["title"] ?? "";
     int year = int.TryParse(formData["year"], out int y) ? y : DateTime.Now.Year;
     float rating = float.TryParse(formData["rating"], out float r) ? r : 5F;
+    string description = formData["description"] ?? "";
 
-    Movie newMovie = new Movie(0, title, year, "", rating);
+    Movie newMovie = new Movie(0, title, year, description, rating);
 
     Result<Movie> result = await movieService.Update(mid, newMovie);
 
