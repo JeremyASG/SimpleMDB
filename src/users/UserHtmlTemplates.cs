@@ -22,7 +22,7 @@ public class UserHtmlTemplates
                    <td>{user.Role}</td>
                    <td><a href=""/users/view?uid={user.Id}"">View</a></td>
                    <td><a href=""/users/edit?uid={user.Id}"">Edit</a></td>
-                   <td><form action=""/users/remove?uid={user.Id}"" method= ""POST"" onsubmit=""return confirm('Are you sure that you want to delete this user.')"">
+                   <td><form action=""/users/remove?uid={user.Id}"" method= ""POST"" onsubmit=""return confirm('Are you sure that you want to delete this user?')"">
                      <input type= ""submit"" value=""Remove"">
                    </form>
                    </td>
@@ -31,6 +31,8 @@ public class UserHtmlTemplates
                 ";
 
     }
+      string pDisable = (page > 1).ToString().ToLower();
+      string nDisable = (page < pageCount).ToString().ToLower();
 
     string html = $@"
             <div class=""add"">
@@ -52,11 +54,11 @@ public class UserHtmlTemplates
              </tbody>
             </table>
             <div class=""pagination"">
-              <a href=""?page=1&size={size}"">First</a>
-              <a href=""?page={page - 1}&size={size}"">Prev</a>
+              <a href=""?page=1&size={size}"" onclick=""return {pDisable};"">First</a>
+              <a href=""?page={page - 1}&size={size}"" onclick=""return {pDisable};"">Prev</a>
               <span>{page} / {pageCount}</span>
-              <a href=""?page={page + 1}&size={size}"">Next</a>
-              <a href=""?page={pageCount}&size={size}"">Last</a>
+              <a href=""?page={page + 1}&size={size}"" onclick=""return {nDisable};"">Next</a>
+              <a href=""?page={pageCount}&size={size}"" onclick=""return {nDisable};"">Last</a>
 
             
             </div>

@@ -71,7 +71,7 @@ public class ActorController
 
     string firstname = formData["firstname"] ?? "";
     string lastname = formData["lastname"] ?? "";
-    string bio = req.QueryString["bio"] ?? "";
+    string bio = formData["bio"] ?? "";
     float rating = float.TryParse(formData["rating"], out float r) ? r : 5F;
 
     Actor newActor = new Actor(0, firstname, lastname, bio, rating);
@@ -87,7 +87,7 @@ public class ActorController
     else
     {
       HttpUtils.AddOptions(options, "redirect", "message", result.Error!.Message);
-     
+
       await HttpUtils.Redirect(req, res, options, "/actors/add");
     }
 
@@ -115,12 +115,12 @@ public class ActorController
       await HttpUtils.Respond(req, res, options, (int)HttpStatusCode.OK, content);
 
     }
-     else
+    else
     {
       HttpUtils.AddOptions(options, "redirect", "message", result.Error!.Message);
       await HttpUtils.Redirect(req, res, options, "/actors");
     }
-   
+
   }
 
 
@@ -144,12 +144,12 @@ public class ActorController
       string content = HtmlTemplates.Base("SimpleMDB", "Actors Edit Page", html, message);
       await HttpUtils.Respond(req, res, options, (int)HttpStatusCode.OK, content);
     }
-     else
+    else
     {
       HttpUtils.AddOptions(options, "redirect", "message", result.Error!.Message);
       await HttpUtils.Redirect(req, res, options, "/actors");
     }
-    
+
 
 
   }
@@ -166,9 +166,10 @@ public class ActorController
 
     string firstname = formData["firstname"] ?? "";
     string lastname = formData["lastname"] ?? "";
+    string bio = formData["bio"] ?? "";
     float rating = float.TryParse(formData["rating"], out float r) ? r : 5F;
 
-    Actor newActor = new Actor(0, firstname, lastname, "", rating);
+    Actor newActor = new Actor(0, firstname, lastname, bio, rating);
 
     Result<Actor> result = await actorService.Update(aid, newActor);
 
@@ -181,22 +182,22 @@ public class ActorController
     else
     {
       HttpUtils.AddOptions(options, "redirect", "message", result.Error!.Message);
-      await HttpUtils.Redirect(req, res, options, "/actors/edit");
+      await HttpUtils.Redirect(req, res, options, $"/actors/edit?aid={aid}");
     }
 
 
   }
 
   //POST /actors/remove?aid=1
-  
-    public async Task RemoveActorPost(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
+
+  public async Task RemoveActorPost(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
   {
     int aid = int.TryParse(req.QueryString["aid"], out int u) ? u : 1;
 
 
     Result<Actor> result = await actorService.Delete(aid);
 
-   if (result.IsValid)
+    if (result.IsValid)
     {
       HttpUtils.AddOptions(options, "redirect", "message", "Actor removed succesfully");
       await HttpUtils.Redirect(req, res, options, "/actors");

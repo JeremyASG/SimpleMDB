@@ -1,10 +1,24 @@
 body
 {
-    color:white;
-    background-color: greenyellow;
+    color:black;
+    background-color: #c4d8e2;
 }
 
 a
 {
-  color:white;
+  color:black;
+}
+
+table
+{
+  border-collapse: collapse;
+}
+table,th,td
+{
+  border: 1px solid black;
+}
+
+form{
+  display: grid;
+  grid-template-columns: 30%;
 }

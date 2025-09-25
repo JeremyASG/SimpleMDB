@@ -1,3 +1,7 @@
+using System.Collections.Specialized;
+using System.Text;
+using System.Web;
+
 namespace SimpleMDB;
 
 public class MockUserService : IUSerService
@@ -8,6 +12,7 @@ public class MockUserService : IUSerService
     public MockUserService(IUserRepository userRepository)
     {
         this.userRepository = userRepository;
+        _ = Create(new User(0, "Admin", "Holasoygerman123", "", Roles.ADMIN));
     }
     public async Task<Result<PagedResult<User>>> ReadAll(int page, int size)
     {
@@ -17,11 +22,16 @@ public class MockUserService : IUSerService
         new Result<PagedResult<User>>(new Exception("No results found.")) :
         new Result<PagedResult<User>>(pagedResult);
 
-        return await Task.FromResult(result);
-         
+        return result;
+
     }
     public async Task<Result<User>> Create(User newUser)
     {
+        if (string.IsNullOrWhiteSpace(newUser.Role))
+        {
+            newUser.Role = Roles.USER;
+        }
+
         if (string.IsNullOrWhiteSpace(newUser.Username))
         {
             return new Result<User>(new Exception("Username cannot be empty."));
@@ -30,13 +40,37 @@ public class MockUserService : IUSerService
         {
             return new Result<User>(new Exception("Username cannot have more than 16 characters"));
         }
+        else if (await userRepository.GetUserByUsername(newUser.Username) != null)
+        {
+            return new Result<User>(new Exception("Username already taken. Choose another username."));
+        }
+
+
+        if (string.IsNullOrWhiteSpace(newUser.Password))
+        {
+            return new Result<User>(new Exception("Password cannot be empty."));
+        }
+        else if (newUser.Password.Length < 16)
+        {
+            return new Result<User>(new Exception("Password cannot have less than 16 characters"));
+        }
+
+
+         if (!Roles.IsValid(newUser.Role))
+        {
+            return new Result<User>(new Exception("Role is not valid."));
+        }
+
+        
+        newUser.Salt = Path.GetRandomFileName();
+        newUser.Password = Encode(newUser.Password + newUser.Salt);
         User? createdUser = await userRepository.Create(newUser);
 
         var result = (createdUser == null) ?
         new Result<User>(new Exception("User could not be created.")) :
         new Result<User>(createdUser);
 
-        return await Task.FromResult(result);
+        return result;
 
 
     }
@@ -49,10 +83,15 @@ public class MockUserService : IUSerService
         new Result<User>(new Exception("User could not be read.")) :
         new Result<User>(user);
 
-        return await Task.FromResult(result);
+        return result;
     }
     public async Task<Result<User>> Update(int id, User newUser)
     {
+        if (string.IsNullOrWhiteSpace(newUser.Role))
+        {
+            newUser.Role = Roles.USER;
+        }
+
         if (string.IsNullOrWhiteSpace(newUser.Username))
         {
             return new Result<User>(new Exception("Username cannot be empty."));
@@ -61,7 +100,31 @@ public class MockUserService : IUSerService
         {
             return new Result<User>(new Exception("Username cannot have more than 16 characters"));
         }
-        
+        else if (await userRepository.GetUserByUsername(newUser.Username) != null)
+        {
+            return new Result<User>(new Exception("Username already taken. Choose another username."));
+        }
+
+
+        if (string.IsNullOrWhiteSpace(newUser.Password))
+        {
+            return new Result<User>(new Exception("Password cannot be empty."));
+        }
+        else if (newUser.Password.Length < 16)
+        {
+            return new Result<User>(new Exception("Password cannot have less than 16 characters"));
+        }
+
+
+         if (!Roles.IsValid(newUser.Role))
+        {
+            return new Result<User>(new Exception("Role is not valid."));
+        }
+
+        string salt = Path.GetRandomFileName();
+        newUser.Password = Encode(newUser.Password + newUser.Salt);
+      
+
         User? user = await userRepository.Update(id, newUser);
 
         var result = (user == null) ?
@@ -78,6 +141,43 @@ public class MockUserService : IUSerService
         new Result<User>(new Exception("User could not be deleted.")) :
         new Result<User>(user);
 
-        return await Task.FromResult(result);
+        return result;
+    }
+
+    public async Task<Result<string>> GetToken(string username, string password)
+    {
+        User? user = await userRepository.GetUserByUsername(username);
+
+        if (user != null && string.Equals(user.Password, Encode(password + user.Salt)))
+        {
+            return new Result<string>(Encode($"username={user.Username}&role={user.Role}&expires={DateTime.Now.AddMinutes(60)}"));
+        }
+        return await Task.FromResult(new Result<string>(new Exception("Invalid username or password.")));
+    }
+
+    public async Task<Result<NameValueCollection>> ValidateToken(string token)
+    {
+        if (!string.IsNullOrWhiteSpace(token))
+        {
+            NameValueCollection? claims = HttpUtility.ParseQueryString(Decode(token));
+
+            return new Result<NameValueCollection>(claims);
+        }
+        else
+        {
+            var result = new Result<NameValueCollection>(new Exception("Invalid token"));
+
+            return await Task.FromResult(result);
+        }
+    }
+
+    public static string Encode(string plaintext)
+    {
+        return Convert.ToBase64String(Encoding.UTF8.GetBytes(plaintext));
+    }
+
+    public static string Decode(string cyphertext)
+    {
+        return Encoding.UTF8.GetString(Convert.FromBase64String(cyphertext));
     }
 }

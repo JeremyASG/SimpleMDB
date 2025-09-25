@@ -161,7 +161,7 @@ public class UserController
   public async Task EditUserPost(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
   {
     var formData = (NameValueCollection?)options["req.form"] ?? [];
-    int uid = int.TryParse(req.QueryString["uid"], out int u) ? u : 1;
+    int uid = int.TryParse(req.QueryString["uid"], out int u) ? u : -1;
 
     string username = formData["username"] ?? "";
     string password = formData["password"] ?? "";
@@ -180,7 +180,7 @@ public class UserController
     else
     {
       HttpUtils.AddOptions(options, "redirect", "message", result.Error!.Message);
-      await HttpUtils.Redirect(req, res, options, "/users/edit");
+      await HttpUtils.Redirect(req, res, options, $"/users/edit?uid={uid}");
     }
 
 

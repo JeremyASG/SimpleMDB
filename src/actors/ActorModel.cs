@@ -5,7 +5,7 @@ public class Actor
     public int Id { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public string Bio { get; set; }
+    public string Bio { get; set; } = "";  
     public float Rating { get; set; }
 
     public Actor(int id = 0, string firstName = "", string lastName = "", string bio = "", float rating = 0)
