@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json;
 using System.Web;
 
 namespace SimpleMDB;
@@ -59,14 +60,58 @@ public class HttpUtils
     {
         string type = req.ContentType ?? "";
 
-        if (type.StartsWith("application/x-www-form-urlencoded"))
+        // Read the body for POST/PUT/PATCH requests
+        if (req.HttpMethod == "POST" || req.HttpMethod == "PUT" || req.HttpMethod == "PATCH")
         {
-            using var sr = new StreamReader(req.InputStream, Encoding.UTF8);
-            string body = await sr.ReadToEndAsync();
-            var formData = HttpUtility.ParseQueryString(body);
+            if (type.StartsWith("application/x-www-form-urlencoded"))
+            {
+                using var sr = new StreamReader(req.InputStream, Encoding.UTF8);
+                string body = await sr.ReadToEndAsync();
+                var formData = HttpUtility.ParseQueryString(body);
 
-            options["req.form"] = formData;
+                options["req.form"] = formData;
+            }
+            else if (type.StartsWith("application/json"))
+            {
+                using var sr = new StreamReader(req.InputStream, Encoding.UTF8);
+                string body = await sr.ReadToEndAsync();
+                options["req.json"] = body;
+            }
+            else if (req.ContentLength64 > 0)
+            {
+                // If there's content but no content-type or unknown type, try to read as JSON
+                using var sr = new StreamReader(req.InputStream, Encoding.UTF8);
+                string body = await sr.ReadToEndAsync();
+                // Try to parse as JSON first
+                if (!string.IsNullOrWhiteSpace(body) && (body.TrimStart().StartsWith("{") || body.TrimStart().StartsWith("[")))
+                {
+                    options["req.json"] = body;
+                }
+            }
         }
+    }
+
+    public static async Task RespondJson(HttpListenerRequest req, HttpListenerResponse res, Hashtable options, int statusCode, object data)
+    {
+        string json = JsonSerializer.Serialize(data, new JsonSerializerOptions 
+        { 
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = false
+        });
+        byte[] content = Encoding.UTF8.GetBytes(json);
+
+        res.StatusCode = statusCode;
+        res.ContentEncoding = Encoding.UTF8;
+        res.ContentType = "application/json";
+        res.ContentLength64 = content.LongLength;
+        await res.OutputStream.WriteAsync(content);
+        res.Close();
+    }
+
+    public static async Task RespondJsonError(HttpListenerRequest req, HttpListenerResponse res, Hashtable options, int statusCode, string message)
+    {
+        var error = new { error = message };
+        await RespondJson(req, res, options, statusCode, error);
     }
 
 
