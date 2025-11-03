@@ -94,9 +94,14 @@ public class AuthApiController
     // Middleware for checking authentication
     public async Task CheckAuth(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {
-        string token = req.Headers["Authorization"]?.StartsWith("Bearer ") == true 
-            ? req.Headers["Authorization"]!.Substring(7) 
-            : "";
+        // Extract token from Authorization header (format: "Bearer <token>")
+        string authHeader = req.Headers["Authorization"] ?? "";
+        string token = "";
+        
+        if (authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            token = authHeader.Substring(7);
+        }
         
         var result = await userService.ValidateToken(token);
 
@@ -114,9 +119,14 @@ public class AuthApiController
     // Middleware for checking admin authorization
     public async Task CheckAdmin(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {
-        string token = req.Headers["Authorization"]?.StartsWith("Bearer ") == true 
-            ? req.Headers["Authorization"]!.Substring(7) 
-            : "";
+        // Extract token from Authorization header (format: "Bearer <token>")
+        string authHeader = req.Headers["Authorization"] ?? "";
+        string token = "";
+        
+        if (authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            token = authHeader.Substring(7);
+        }
         
         var result = await userService.ValidateToken(token);
 
