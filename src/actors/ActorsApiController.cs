@@ -93,10 +93,15 @@ public class ActorsApiController
         }
     }
 
-    // GET /api/v1/actors/view?aid=1
+    // GET /api/v1/actors/view?aid=1 (legacy) or GET /api/v1/actors/{id}
     public async Task View(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {
-        int aid = int.TryParse(req.QueryString["aid"], out int a) ? a : 0;
+        // Try to get from route parameter first (REST style), then fall back to query string
+        int aid = HttpUtils.GetRouteParamAsInt(options, "id");
+        if (aid == 0)
+        {
+            aid = int.TryParse(req.QueryString["aid"], out int a) ? a : 0;
+        }
 
         if (aid == 0)
         {
@@ -128,11 +133,17 @@ public class ActorsApiController
         }
     }
 
-    // POST /api/v1/actors/edit?aid=1
+    // POST /api/v1/actors/edit?aid=1 (legacy) or PUT /api/v1/actors/{id}
     public async Task Edit(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {
         var jsonData = (Dictionary<string, JsonElement>?)options["req.json"];
-        int aid = int.TryParse(req.QueryString["aid"], out int a) ? a : 0;
+        
+        // Try to get from route parameter first (REST style), then fall back to query string
+        int aid = HttpUtils.GetRouteParamAsInt(options, "id");
+        if (aid == 0)
+        {
+            aid = int.TryParse(req.QueryString["aid"], out int a) ? a : 0;
+        }
 
         if (aid == 0)
         {
@@ -179,10 +190,15 @@ public class ActorsApiController
         }
     }
 
-    // POST /api/v1/actors/remove?aid=1
+    // POST /api/v1/actors/remove?aid=1 (legacy) or DELETE /api/v1/actors/{id}
     public async Task Remove(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {
-        int aid = int.TryParse(req.QueryString["aid"], out int a) ? a : 0;
+        // Try to get from route parameter first (REST style), then fall back to query string
+        int aid = HttpUtils.GetRouteParamAsInt(options, "id");
+        if (aid == 0)
+        {
+            aid = int.TryParse(req.QueryString["aid"], out int a) ? a : 0;
+        }
 
         if (aid == 0)
         {

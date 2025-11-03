@@ -88,10 +88,15 @@ public class UsersApiController
         }
     }
 
-    // GET /api/v1/users/view?uid=1
+    // GET /api/v1/users/view?uid=1 (legacy) or GET /api/v1/users/{id}
     public async Task View(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {
-        int uid = int.TryParse(req.QueryString["uid"], out int u) ? u : 0;
+        // Try to get from route parameter first (REST style), then fall back to query string
+        int uid = HttpUtils.GetRouteParamAsInt(options, "id");
+        if (uid == 0)
+        {
+            uid = int.TryParse(req.QueryString["uid"], out int u) ? u : 0;
+        }
 
         if (uid == 0)
         {
@@ -121,11 +126,17 @@ public class UsersApiController
         }
     }
 
-    // POST /api/v1/users/edit?uid=1
+    // POST /api/v1/users/edit?uid=1 (legacy) or PUT /api/v1/users/{id}
     public async Task Edit(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {
         var jsonData = (Dictionary<string, JsonElement>?)options["req.json"];
-        int uid = int.TryParse(req.QueryString["uid"], out int u) ? u : 0;
+        
+        // Try to get from route parameter first (REST style), then fall back to query string
+        int uid = HttpUtils.GetRouteParamAsInt(options, "id");
+        if (uid == 0)
+        {
+            uid = int.TryParse(req.QueryString["uid"], out int u) ? u : 0;
+        }
 
         if (uid == 0)
         {
@@ -169,10 +180,15 @@ public class UsersApiController
         }
     }
 
-    // POST /api/v1/users/remove?uid=1
+    // POST /api/v1/users/remove?uid=1 (legacy) or DELETE /api/v1/users/{id}
     public async Task Remove(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {
-        int uid = int.TryParse(req.QueryString["uid"], out int u) ? u : 0;
+        // Try to get from route parameter first (REST style), then fall back to query string
+        int uid = HttpUtils.GetRouteParamAsInt(options, "id");
+        if (uid == 0)
+        {
+            uid = int.TryParse(req.QueryString["uid"], out int u) ? u : 0;
+        }
 
         if (uid == 0)
         {

@@ -137,5 +137,24 @@ public class HttpUtils
         }
     }
 
+    // Helper method to get route parameter from options
+    public static string GetRouteParam(Hashtable options, string paramName, string defaultValue = "")
+    {
+        var parameters = options["route.params"] as Dictionary<string, string>;
+        if (parameters != null && parameters.ContainsKey(paramName))
+        {
+            return parameters[paramName];
+        }
+        return defaultValue;
+    }
+
+    // Helper method to get route parameter as integer
+    public static int GetRouteParamAsInt(Hashtable options, string paramName, int defaultValue = 0)
+    {
+        string value = GetRouteParam(options, paramName);
+        return int.TryParse(value, out int result) ? result : defaultValue;
+    }
+
 
 }
+

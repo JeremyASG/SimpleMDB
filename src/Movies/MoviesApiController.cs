@@ -93,10 +93,15 @@ public class MoviesApiController
         }
     }
 
-    // GET /api/v1/movies/view?mid=1
+    // GET /api/v1/movies/view?mid=1 (legacy) or GET /api/v1/movies/{id}
     public async Task View(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {
-        int mid = int.TryParse(req.QueryString["mid"], out int m) ? m : 0;
+        // Try to get from route parameter first (REST style), then fall back to query string
+        int mid = HttpUtils.GetRouteParamAsInt(options, "id");
+        if (mid == 0)
+        {
+            mid = int.TryParse(req.QueryString["mid"], out int m) ? m : 0;
+        }
 
         if (mid == 0)
         {
@@ -128,11 +133,17 @@ public class MoviesApiController
         }
     }
 
-    // POST /api/v1/movies/edit?mid=1
+    // POST /api/v1/movies/edit?mid=1 (legacy) or PUT /api/v1/movies/{id}
     public async Task Edit(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {
         var jsonData = (Dictionary<string, JsonElement>?)options["req.json"];
-        int mid = int.TryParse(req.QueryString["mid"], out int m) ? m : 0;
+        
+        // Try to get from route parameter first (REST style), then fall back to query string
+        int mid = HttpUtils.GetRouteParamAsInt(options, "id");
+        if (mid == 0)
+        {
+            mid = int.TryParse(req.QueryString["mid"], out int m) ? m : 0;
+        }
 
         if (mid == 0)
         {
@@ -179,10 +190,15 @@ public class MoviesApiController
         }
     }
 
-    // POST /api/v1/movies/remove?mid=1
+    // POST /api/v1/movies/remove?mid=1 (legacy) or DELETE /api/v1/movies/{id}
     public async Task Remove(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {
-        int mid = int.TryParse(req.QueryString["mid"], out int m) ? m : 0;
+        // Try to get from route parameter first (REST style), then fall back to query string
+        int mid = HttpUtils.GetRouteParamAsInt(options, "id");
+        if (mid == 0)
+        {
+            mid = int.TryParse(req.QueryString["mid"], out int m) ? m : 0;
+        }
 
         if (mid == 0)
         {

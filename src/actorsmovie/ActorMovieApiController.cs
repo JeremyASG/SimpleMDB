@@ -13,10 +13,16 @@ public class ActorMovieApiController
         this.actorMovieService = actorMovieService;
     }
 
-    // GET /api/v1/actors/movies?aid=1&page=1&size=10
+    // GET /api/v1/actors/movies?aid=1&page=1&size=10 (legacy) or GET /api/v1/actors/{id}/movies
     public async Task GetMoviesByActor(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {
-        int actorId = int.TryParse(req.QueryString["aid"], out int aid) ? aid : 0;
+        // Try to get from route parameter first (REST style), then fall back to query string
+        int actorId = HttpUtils.GetRouteParamAsInt(options, "id");
+        if (actorId == 0)
+        {
+            actorId = int.TryParse(req.QueryString["aid"], out int aid) ? aid : 0;
+        }
+        
         int page = int.TryParse(req.QueryString["page"], out int p) ? p : 1;
         int size = int.TryParse(req.QueryString["size"], out int s) ? s : 10;
 
@@ -61,10 +67,16 @@ public class ActorMovieApiController
         }
     }
 
-    // GET /api/v1/movies/actors?mid=1&page=1&size=10
+    // GET /api/v1/movies/actors?mid=1&page=1&size=10 (legacy) or GET /api/v1/movies/{id}/actors
     public async Task GetActorsByMovie(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {
-        int movieId = int.TryParse(req.QueryString["mid"], out int mid) ? mid : 0;
+        // Try to get from route parameter first (REST style), then fall back to query string
+        int movieId = HttpUtils.GetRouteParamAsInt(options, "id");
+        if (movieId == 0)
+        {
+            movieId = int.TryParse(req.QueryString["mid"], out int mid) ? mid : 0;
+        }
+        
         int page = int.TryParse(req.QueryString["page"], out int p) ? p : 1;
         int size = int.TryParse(req.QueryString["size"], out int s) ? s : 10;
 
@@ -201,10 +213,15 @@ public class ActorMovieApiController
         }
     }
 
-    // POST /api/v1/actors/movies/remove?amid=1
+    // POST /api/v1/actors/movies/remove?amid=1 (legacy) or DELETE /api/v1/actor-movies/{id}
     public async Task RemoveMovieFromActor(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {
-        int amId = int.TryParse(req.QueryString["amid"], out int amid) ? amid : 0;
+        // Try to get from route parameter first (REST style), then fall back to query string
+        int amId = HttpUtils.GetRouteParamAsInt(options, "id");
+        if (amId == 0)
+        {
+            amId = int.TryParse(req.QueryString["amid"], out int amid) ? amid : 0;
+        }
 
         if (amId == 0)
         {
@@ -227,10 +244,15 @@ public class ActorMovieApiController
         }
     }
 
-    // POST /api/v1/movies/actors/remove?amid=1
+    // POST /api/v1/movies/actors/remove?amid=1 (legacy) or DELETE /api/v1/actor-movies/{id}
     public async Task RemoveActorFromMovie(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {
-        int amId = int.TryParse(req.QueryString["amid"], out int amid) ? amid : 0;
+        // Try to get from route parameter first (REST style), then fall back to query string
+        int amId = HttpUtils.GetRouteParamAsInt(options, "id");
+        if (amId == 0)
+        {
+            amId = int.TryParse(req.QueryString["amid"], out int amid) ? amid : 0;
+        }
 
         if (amId == 0)
         {

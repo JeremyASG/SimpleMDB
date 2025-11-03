@@ -133,6 +133,31 @@ public class App
         router.AddPost("/api/v1/movies/actors/add", authApiController.CheckAuth, actorMovieApiController.AddActorToMovie);
         router.AddPost("/api/v1/movies/actors/remove", authApiController.CheckAuth, actorMovieApiController.RemoveActorFromMovie);
 
+        // RESTful API Routes with parametrized routing
+        
+        // Users RESTful endpoints
+        router.AddGet("/api/v1/users/{id}", authApiController.CheckAdmin, usersApiController.View);
+        router.AddPut("/api/v1/users/{id}", authApiController.CheckAdmin, usersApiController.Edit);
+        router.AddDelete("/api/v1/users/{id}", authApiController.CheckAdmin, usersApiController.Remove);
+
+        // Actors RESTful endpoints
+        router.AddGet("/api/v1/actors/{id}", authApiController.CheckAuth, actorsApiController.View);
+        router.AddPut("/api/v1/actors/{id}", authApiController.CheckAuth, actorsApiController.Edit);
+        router.AddDelete("/api/v1/actors/{id}", authApiController.CheckAuth, actorsApiController.Remove);
+
+        // Movies RESTful endpoints
+        router.AddGet("/api/v1/movies/{id}", authApiController.CheckAuth, moviesApiController.View);
+        router.AddPut("/api/v1/movies/{id}", authApiController.CheckAuth, moviesApiController.Edit);
+        router.AddDelete("/api/v1/movies/{id}", authApiController.CheckAuth, moviesApiController.Remove);
+
+        // Actor-Movie RESTful endpoints (nested resources)
+        router.AddGet("/api/v1/actors/{id}/movies", authApiController.CheckAuth, actorMovieApiController.GetMoviesByActor);
+        router.AddGet("/api/v1/movies/{id}/actors", authApiController.CheckAuth, actorMovieApiController.GetActorsByMovie);
+        
+        // Actor-Movie relationship as its own resource
+        router.AddPost("/api/v1/actor-movies", authApiController.CheckAuth, actorMovieApiController.AddMovieToActor);
+        router.AddDelete("/api/v1/actor-movies/{id}", authApiController.CheckAuth, actorMovieApiController.RemoveMovieFromActor);
+
     }
 
     public async Task Start()
