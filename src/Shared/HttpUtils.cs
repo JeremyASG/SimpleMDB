@@ -60,19 +60,34 @@ public class HttpUtils
     {
         string type = req.ContentType ?? "";
 
-        if (type.StartsWith("application/x-www-form-urlencoded"))
+        // Read the body for POST/PUT/PATCH requests
+        if (req.HttpMethod == "POST" || req.HttpMethod == "PUT" || req.HttpMethod == "PATCH")
         {
-            using var sr = new StreamReader(req.InputStream, Encoding.UTF8);
-            string body = await sr.ReadToEndAsync();
-            var formData = HttpUtility.ParseQueryString(body);
+            if (type.StartsWith("application/x-www-form-urlencoded"))
+            {
+                using var sr = new StreamReader(req.InputStream, Encoding.UTF8);
+                string body = await sr.ReadToEndAsync();
+                var formData = HttpUtility.ParseQueryString(body);
 
-            options["req.form"] = formData;
-        }
-        else if (type.StartsWith("application/json"))
-        {
-            using var sr = new StreamReader(req.InputStream, Encoding.UTF8);
-            string body = await sr.ReadToEndAsync();
-            options["req.json"] = body;
+                options["req.form"] = formData;
+            }
+            else if (type.StartsWith("application/json"))
+            {
+                using var sr = new StreamReader(req.InputStream, Encoding.UTF8);
+                string body = await sr.ReadToEndAsync();
+                options["req.json"] = body;
+            }
+            else if (req.ContentLength64 > 0)
+            {
+                // If there's content but no content-type or unknown type, try to read as JSON
+                using var sr = new StreamReader(req.InputStream, Encoding.UTF8);
+                string body = await sr.ReadToEndAsync();
+                // Try to parse as JSON first
+                if (!string.IsNullOrWhiteSpace(body) && (body.TrimStart().StartsWith("{") || body.TrimStart().StartsWith("[")))
+                {
+                    options["req.json"] = body;
+                }
+            }
         }
     }
 

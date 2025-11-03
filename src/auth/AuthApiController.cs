@@ -20,10 +20,22 @@ public class AuthApiController
 
         try
         {
+            if (string.IsNullOrWhiteSpace(jsonBody) || jsonBody == "{}")
+            {
+                await HttpUtils.RespondJsonError(req, res, options, (int)HttpStatusCode.BadRequest, "Request body is required");
+                return;
+            }
+
             var data = JsonSerializer.Deserialize<JsonElement>(jsonBody);
             string username = data.TryGetProperty("username", out var u) ? u.GetString() ?? "" : "";
             string password = data.TryGetProperty("password", out var p) ? p.GetString() ?? "" : "";
             string cpassword = data.TryGetProperty("cpassword", out var cp) ? cp.GetString() ?? "" : "";
+
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
+                await HttpUtils.RespondJsonError(req, res, options, (int)HttpStatusCode.BadRequest, "Username and password are required");
+                return;
+            }
 
             if (password != cpassword)
             {
@@ -44,9 +56,13 @@ public class AuthApiController
                 await HttpUtils.RespondJsonError(req, res, options, (int)HttpStatusCode.BadRequest, result.Error!.Message);
             }
         }
-        catch (JsonException)
+        catch (JsonException ex)
         {
-            await HttpUtils.RespondJsonError(req, res, options, (int)HttpStatusCode.BadRequest, "Invalid JSON format");
+            await HttpUtils.RespondJsonError(req, res, options, (int)HttpStatusCode.BadRequest, $"Invalid JSON format: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            await HttpUtils.RespondJsonError(req, res, options, (int)HttpStatusCode.InternalServerError, $"Server error: {ex.Message}");
         }
     }
 
@@ -57,9 +73,21 @@ public class AuthApiController
 
         try
         {
+            if (string.IsNullOrWhiteSpace(jsonBody) || jsonBody == "{}")
+            {
+                await HttpUtils.RespondJsonError(req, res, options, (int)HttpStatusCode.BadRequest, "Request body is required");
+                return;
+            }
+
             var data = JsonSerializer.Deserialize<JsonElement>(jsonBody);
             string username = data.TryGetProperty("username", out var u) ? u.GetString() ?? "" : "";
             string password = data.TryGetProperty("password", out var p) ? p.GetString() ?? "" : "";
+
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
+                await HttpUtils.RespondJsonError(req, res, options, (int)HttpStatusCode.BadRequest, "Username and password are required");
+                return;
+            }
 
             var result = await userService.GetToken(username, password);
 
@@ -74,9 +102,13 @@ public class AuthApiController
                 await HttpUtils.RespondJsonError(req, res, options, (int)HttpStatusCode.Unauthorized, result.Error!.Message);
             }
         }
-        catch (JsonException)
+        catch (JsonException ex)
         {
-            await HttpUtils.RespondJsonError(req, res, options, (int)HttpStatusCode.BadRequest, "Invalid JSON format");
+            await HttpUtils.RespondJsonError(req, res, options, (int)HttpStatusCode.BadRequest, $"Invalid JSON format: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            await HttpUtils.RespondJsonError(req, res, options, (int)HttpStatusCode.InternalServerError, $"Server error: {ex.Message}");
         }
     }
 
