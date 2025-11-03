@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json;
 using System.Web;
 
 namespace SimpleMDB;
@@ -67,6 +68,35 @@ public class HttpUtils
 
             options["req.form"] = formData;
         }
+        else if (type.StartsWith("application/json"))
+        {
+            using var sr = new StreamReader(req.InputStream, Encoding.UTF8);
+            string body = await sr.ReadToEndAsync();
+            options["req.json"] = body;
+        }
+    }
+
+    public static async Task RespondJson(HttpListenerRequest req, HttpListenerResponse res, Hashtable options, int statusCode, object data)
+    {
+        string json = JsonSerializer.Serialize(data, new JsonSerializerOptions 
+        { 
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = false
+        });
+        byte[] content = Encoding.UTF8.GetBytes(json);
+
+        res.StatusCode = statusCode;
+        res.ContentEncoding = Encoding.UTF8;
+        res.ContentType = "application/json";
+        res.ContentLength64 = content.LongLength;
+        await res.OutputStream.WriteAsync(content);
+        res.Close();
+    }
+
+    public static async Task RespondJsonError(HttpListenerRequest req, HttpListenerResponse res, Hashtable options, int statusCode, string message)
+    {
+        var error = new { error = message };
+        await RespondJson(req, res, options, statusCode, error);
     }
 
 
