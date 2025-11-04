@@ -60,6 +60,28 @@ public class MocklActorMovieService : IActorMovieService
 
         return await Task.FromResult(result);
     }
+    public async Task<Result<ActorMovie>> Read(int id)
+    {
+        ActorMovie? actorMovie = await actorMovieRepository.Read(id);
+
+        var result = (actorMovie == null)
+            ? new Result<ActorMovie>(new Exception("ActorMovie not found."))
+            : new Result<ActorMovie>(actorMovie);
+
+        return await Task.FromResult(result);
+    }
+
+    public async Task<Result<ActorMovie>> Update(int id, string roleName)
+    {
+        ActorMovie? actorMovie = await actorMovieRepository.Update(id, roleName);
+
+        var result = (actorMovie == null)
+            ? new Result<ActorMovie>(new Exception("ActorMovie could not be updated."))
+            : new Result<ActorMovie>(actorMovie);
+
+        return await Task.FromResult(result);
+    }
+
     public async Task<Result<ActorMovie>> Delete(int id)
     {
     ActorMovie? actorMovie = await actorMovieRepository.Delete(id);

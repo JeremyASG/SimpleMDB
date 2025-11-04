@@ -232,6 +232,30 @@ public class MySqlActorMovieRepository : IActorMovieRepository
         return actorMovie;
 
     }
+    public async Task<ActorMovie?> Update(int id, string roleName)
+    {
+        using var dbc = OpenDb();
+
+        var actorMovie = await Read(id);
+        if (actorMovie == null)
+        {
+            return null;
+        }
+
+        using var cmd = dbc.CreateCommand();
+        cmd.CommandText = @"
+        UPDATE ActorsMovies 
+        SET rolename = @rolename
+        WHERE id = @id;
+    ";
+        cmd.Parameters.AddWithValue("@id", id);
+        cmd.Parameters.AddWithValue("@rolename", roleName);
+
+        int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+        return rowsAffected > 0 ? new ActorMovie(id, actorMovie.ActorId, actorMovie.MovieId, roleName) : null;
+    }
+
     public async Task<ActorMovie?> Delete(int id)
     {
         using var dbc = OpenDb();

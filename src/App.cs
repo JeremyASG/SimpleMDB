@@ -40,6 +40,12 @@ public class App
         var actorMovieService = new MocklActorMovieService(actorMovieRepository);
         var actorMovieController = new ActorMovieController(actorMovieService, actorService, movieService);
 
+        // API Controllers
+        var authApiController = new AuthApiController(userService);
+        var usersApiController = new UsersApiController(userService);
+        var actorsApiController = new ActorsApiController(actorService);
+        var moviesApiController = new MoviesApiController(movieService);
+        var actorMovieApiController = new ActorMovieApiController(actorMovieService);
 
         router = new HttpRouter();
         router.Use(HttpUtils.ServeStaticFile);
@@ -90,8 +96,72 @@ public class App
         router.AddPost("/movies/actors/add", authController.CheckAuth,  actorMovieController.AddActorsByMoviePost);
         router.AddPost("/movies/actors/remove", authController.CheckAuth,  actorMovieController.RemoveActorsByMoviePost);
        
+        // API Routes - /api/v1
         
+        // Auth API endpoints
+        router.AddPost("/api/v1/auth/register", authApiController.RegisterPost);
+        router.AddPost("/api/v1/auth/login", authApiController.LoginPost);
+        router.AddPost("/api/v1/auth/logout", authApiController.LogoutPost);
+
+        // Users API endpoints
+        router.AddGet("/api/v1/users", authApiController.CheckAdmin, usersApiController.GetAll);
+        router.AddPost("/api/v1/users/add", authApiController.CheckAdmin, usersApiController.Add);
+        router.AddGet("/api/v1/users/view", authApiController.CheckAdmin, usersApiController.View);
+        router.AddPost("/api/v1/users/edit", authApiController.CheckAdmin, usersApiController.Edit);
+        router.AddPost("/api/v1/users/remove", authApiController.CheckAdmin, usersApiController.Remove);
+
+        // Actors API endpoints
+        router.AddGet("/api/v1/actors", actorsApiController.GetAll);
+        router.AddPost("/api/v1/actors/add", authApiController.CheckAuth, actorsApiController.Add);
+        router.AddGet("/api/v1/actors/view", authApiController.CheckAuth, actorsApiController.View);
+        router.AddPost("/api/v1/actors/edit", authApiController.CheckAuth, actorsApiController.Edit);
+        router.AddPost("/api/v1/actors/remove", authApiController.CheckAuth, actorsApiController.Remove);
+
+        // Movies API endpoints
+        router.AddGet("/api/v1/movies", moviesApiController.GetAll);
+        router.AddPost("/api/v1/movies/add", authApiController.CheckAuth, moviesApiController.Add);
+        router.AddGet("/api/v1/movies/view", authApiController.CheckAuth, moviesApiController.View);
+        router.AddPost("/api/v1/movies/edit", authApiController.CheckAuth, moviesApiController.Edit);
+        router.AddPost("/api/v1/movies/remove", authApiController.CheckAuth, moviesApiController.Remove);
+
+        // Actor-Movie API endpoints
+        router.AddGet("/api/v1/actors/movies", authApiController.CheckAuth, actorMovieApiController.GetMoviesByActor);
+        router.AddPost("/api/v1/actors/movies/add", authApiController.CheckAuth, actorMovieApiController.AddMovieToActor);
+        router.AddPost("/api/v1/actors/movies/remove", authApiController.CheckAuth, actorMovieApiController.RemoveMovieFromActor);
+
+        router.AddGet("/api/v1/movies/actors", authApiController.CheckAuth, actorMovieApiController.GetActorsByMovie);
+        router.AddPost("/api/v1/movies/actors/add", authApiController.CheckAuth, actorMovieApiController.AddActorToMovie);
+        router.AddPost("/api/v1/movies/actors/remove", authApiController.CheckAuth, actorMovieApiController.RemoveActorFromMovie);
+
+        // RESTful API Routes with parametrized routing
         
+        // Users RESTful endpoints
+        router.AddPost("/api/v1/users", authApiController.CheckAdmin, usersApiController.Add);
+        router.AddGet("/api/v1/users/{id}", authApiController.CheckAdmin, usersApiController.View);
+        router.AddPut("/api/v1/users/{id}", authApiController.CheckAdmin, usersApiController.Edit);
+        router.AddDelete("/api/v1/users/{id}", authApiController.CheckAdmin, usersApiController.Remove);
+
+        // Actors RESTful endpoints
+        router.AddPost("/api/v1/actors", authApiController.CheckAuth, actorsApiController.Add);
+        router.AddGet("/api/v1/actors/{id}", authApiController.CheckAuth, actorsApiController.View);
+        router.AddPut("/api/v1/actors/{id}", authApiController.CheckAuth, actorsApiController.Edit);
+        router.AddDelete("/api/v1/actors/{id}", authApiController.CheckAuth, actorsApiController.Remove);
+
+        // Movies RESTful endpoints
+        router.AddPost("/api/v1/movies", authApiController.CheckAuth, moviesApiController.Add);
+        router.AddGet("/api/v1/movies/{id}", authApiController.CheckAuth, moviesApiController.View);
+        router.AddPut("/api/v1/movies/{id}", authApiController.CheckAuth, moviesApiController.Edit);
+        router.AddDelete("/api/v1/movies/{id}", authApiController.CheckAuth, moviesApiController.Remove);
+
+        // Actor-Movie RESTful endpoints (nested resources)
+        router.AddGet("/api/v1/actors/{id}/movies", authApiController.CheckAuth, actorMovieApiController.GetMoviesByActor);
+        router.AddGet("/api/v1/movies/{id}/actors", authApiController.CheckAuth, actorMovieApiController.GetActorsByMovie);
+        
+        // Actor-Movie relationship as its own resource
+        router.AddPost("/api/v1/actor-movies", authApiController.CheckAuth, actorMovieApiController.AddMovieToActor);
+        router.AddGet("/api/v1/actor-movies/{id}", authApiController.CheckAuth, actorMovieApiController.View);
+        router.AddPut("/api/v1/actor-movies/{id}", authApiController.CheckAuth, actorMovieApiController.Edit);
+        router.AddDelete("/api/v1/actor-movies/{id}", authApiController.CheckAuth, actorMovieApiController.RemoveMovieFromActor);
 
     }
 
