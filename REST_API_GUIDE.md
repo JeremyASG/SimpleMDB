@@ -103,6 +103,18 @@ curl -X POST http://127.0.0.1:8080/api/v1/actor-movies \
   -H "Content-Type: application/json" \
   -d '{"actorId":10,"movieId":25,"roleName":"Lead Role"}'
 
+# View a specific relationship
+GET /api/v1/actor-movies/15
+curl -H "Authorization: ******" \
+  http://127.0.0.1:8080/api/v1/actor-movies/15
+
+# Update a relationship (change role name)
+PUT /api/v1/actor-movies/15
+curl -X PUT http://127.0.0.1:8080/api/v1/actor-movies/15 \
+  -H "Authorization: ******" \
+  -H "Content-Type: application/json" \
+  -d '{"roleName":"Updated Role Name"}'
+
 # Delete a relationship
 DELETE /api/v1/actor-movies/15
 curl -X DELETE http://127.0.0.1:8080/api/v1/actor-movies/15 \
@@ -148,7 +160,7 @@ DELETE /api/v1/users/45
 | Action | Legacy | RESTful |
 |--------|--------|---------|
 | List | `GET /api/v1/users` | Same |
-| Create | `POST /api/v1/users/add` | Same |
+| Create | `POST /api/v1/users/add` | `POST /api/v1/users` ⭐ NEW |
 | Read | `GET /api/v1/users/view?uid={id}` | `GET /api/v1/users/{id}` |
 | Update | `POST /api/v1/users/edit?uid={id}` | `PUT /api/v1/users/{id}` |
 | Delete | `POST /api/v1/users/remove?uid={id}` | `DELETE /api/v1/users/{id}` |
@@ -157,7 +169,7 @@ DELETE /api/v1/users/45
 | Action | Legacy | RESTful |
 |--------|--------|---------|
 | List | `GET /api/v1/actors` | Same |
-| Create | `POST /api/v1/actors/add` | Same |
+| Create | `POST /api/v1/actors/add` | `POST /api/v1/actors` ⭐ NEW |
 | Read | `GET /api/v1/actors/view?aid={id}` | `GET /api/v1/actors/{id}` |
 | Update | `POST /api/v1/actors/edit?aid={id}` | `PUT /api/v1/actors/{id}` |
 | Delete | `POST /api/v1/actors/remove?aid={id}` | `DELETE /api/v1/actors/{id}` |
@@ -167,7 +179,7 @@ DELETE /api/v1/users/45
 | Action | Legacy | RESTful |
 |--------|--------|---------|
 | List | `GET /api/v1/movies` | Same |
-| Create | `POST /api/v1/movies/add` | Same |
+| Create | `POST /api/v1/movies/add` | `POST /api/v1/movies` ⭐ NEW |
 | Read | `GET /api/v1/movies/view?mid={id}` | `GET /api/v1/movies/{id}` |
 | Update | `POST /api/v1/movies/edit?mid={id}` | `PUT /api/v1/movies/{id}` |
 | Delete | `POST /api/v1/movies/remove?mid={id}` | `DELETE /api/v1/movies/{id}` |
@@ -177,6 +189,8 @@ DELETE /api/v1/users/45
 | Action | Legacy | RESTful |
 |--------|--------|---------|
 | Create | `POST /api/v1/actors/movies/add` | `POST /api/v1/actor-movies` |
+| Read | Not available | `GET /api/v1/actor-movies/{id}` ⭐ NEW |
+| Update | Not available | `PUT /api/v1/actor-movies/{id}` ⭐ NEW |
 | Delete | `POST /api/v1/actors/movies/remove?amid={id}` | `DELETE /api/v1/actor-movies/{id}` |
 
 ## REST Principles Applied
