@@ -274,4 +274,94 @@ public class ActorMovieApiController
                 new { error = result.Error!.Message });
         }
     }
+
+    // GET /api/v1/actors-movies/{id} - View specific actor-movie relationship
+    public async Task View(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
+    {
+        // Try to get from route parameter first (REST style), then fall back to query string
+        int amId = HttpUtils.GetRouteParamAsInt(options, "id");
+        if (amId == 0)
+        {
+            amId = int.TryParse(req.QueryString["id"], out int amid) ? amid : 0;
+        }
+
+        if (amId == 0)
+        {
+            await HttpUtils.RespondJson(req, res, options, (int)HttpStatusCode.BadRequest, 
+                new { error = "Invalid actor-movie ID" });
+            return;
+        }
+
+        Result<ActorMovie> result = await actorMovieService.Read(amId);
+
+        if (result.IsValid)
+        {
+            ActorMovie actorMovie = result.Value!;
+            await HttpUtils.RespondJson(req, res, options, (int)HttpStatusCode.OK, 
+                new { 
+                    actorMovie = new {
+                        id = actorMovie.Id,
+                        actorId = actorMovie.ActorId,
+                        movieId = actorMovie.MovieId,
+                        roleName = actorMovie.RoleName
+                    }
+                });
+        }
+        else
+        {
+            await HttpUtils.RespondJson(req, res, options, (int)HttpStatusCode.NotFound, 
+                new { error = result.Error!.Message });
+        }
+    }
+
+    // PUT /api/v1/actors-movies/{id} - Update actor-movie relationship
+    public async Task Edit(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
+    {
+        var jsonData = (Dictionary<string, JsonElement>?)options["req.json"];
+        
+        // Try to get from route parameter first (REST style), then fall back to query string
+        int amId = HttpUtils.GetRouteParamAsInt(options, "id");
+        if (amId == 0)
+        {
+            amId = int.TryParse(req.QueryString["id"], out int amid) ? amid : 0;
+        }
+
+        if (amId == 0)
+        {
+            await HttpUtils.RespondJson(req, res, options, (int)HttpStatusCode.BadRequest, 
+                new { error = "Invalid actor-movie ID" });
+            return;
+        }
+
+        if (jsonData == null)
+        {
+            await HttpUtils.RespondJson(req, res, options, (int)HttpStatusCode.BadRequest, 
+                new { error = "Invalid JSON data" });
+            return;
+        }
+
+        string roleName = jsonData.ContainsKey("roleName") ? jsonData["roleName"].GetString() ?? "" : "";
+
+        Result<ActorMovie> result = await actorMovieService.Update(amId, roleName);
+
+        if (result.IsValid)
+        {
+            var actorMovie = result.Value!;
+            await HttpUtils.RespondJson(req, res, options, (int)HttpStatusCode.OK, 
+                new { 
+                    message = "Actor-movie relationship updated successfully",
+                    actorMovie = new {
+                        id = actorMovie.Id,
+                        actorId = actorMovie.ActorId,
+                        movieId = actorMovie.MovieId,
+                        roleName = actorMovie.RoleName
+                    }
+                });
+        }
+        else
+        {
+            await HttpUtils.RespondJson(req, res, options, (int)HttpStatusCode.BadRequest, 
+                new { error = result.Error!.Message });
+        }
+    }
 }

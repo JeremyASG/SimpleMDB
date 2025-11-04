@@ -10,6 +10,8 @@ public interface IActorMovieRepository
      public Task<List<Actor>> ReadAllActors();
      public Task<List<Movie>> ReadAllMovies();
     public Task<ActorMovie?> Create(int actorId, int movieId, string roleName );
+    public Task<ActorMovie?> Read(int id);
+    public Task<ActorMovie?> Update(int id, string roleName);
     public Task<ActorMovie?> Delete(int id);
 
 }

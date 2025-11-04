@@ -136,16 +136,19 @@ public class App
         // RESTful API Routes with parametrized routing
         
         // Users RESTful endpoints
+        router.AddPost("/api/v1/users", authApiController.CheckAdmin, usersApiController.Add);
         router.AddGet("/api/v1/users/{id}", authApiController.CheckAdmin, usersApiController.View);
         router.AddPut("/api/v1/users/{id}", authApiController.CheckAdmin, usersApiController.Edit);
         router.AddDelete("/api/v1/users/{id}", authApiController.CheckAdmin, usersApiController.Remove);
 
         // Actors RESTful endpoints
+        router.AddPost("/api/v1/actors", authApiController.CheckAuth, actorsApiController.Add);
         router.AddGet("/api/v1/actors/{id}", authApiController.CheckAuth, actorsApiController.View);
         router.AddPut("/api/v1/actors/{id}", authApiController.CheckAuth, actorsApiController.Edit);
         router.AddDelete("/api/v1/actors/{id}", authApiController.CheckAuth, actorsApiController.Remove);
 
         // Movies RESTful endpoints
+        router.AddPost("/api/v1/movies", authApiController.CheckAuth, moviesApiController.Add);
         router.AddGet("/api/v1/movies/{id}", authApiController.CheckAuth, moviesApiController.View);
         router.AddPut("/api/v1/movies/{id}", authApiController.CheckAuth, moviesApiController.Edit);
         router.AddDelete("/api/v1/movies/{id}", authApiController.CheckAuth, moviesApiController.Remove);
@@ -156,6 +159,8 @@ public class App
         
         // Actor-Movie relationship as its own resource
         router.AddPost("/api/v1/actor-movies", authApiController.CheckAuth, actorMovieApiController.AddMovieToActor);
+        router.AddGet("/api/v1/actor-movies/{id}", authApiController.CheckAuth, actorMovieApiController.View);
+        router.AddPut("/api/v1/actor-movies/{id}", authApiController.CheckAuth, actorMovieApiController.Edit);
         router.AddDelete("/api/v1/actor-movies/{id}", authApiController.CheckAuth, actorMovieApiController.RemoveMovieFromActor);
 
     }

@@ -92,6 +92,31 @@ public async Task<PagedResult<(ActorMovie, Actor)>> ReadAllActorsByMovie(int mov
 
         return await Task.FromResult(actorMovie);
     }
+    public async Task<ActorMovie?> Read(int id)
+    {
+        ActorMovie? actorMovie = actorMovies.FirstOrDefault((am) => am.Id == id);
+        return await Task.FromResult(actorMovie);
+    }
+
+    public async Task<ActorMovie?> Update(int id, string roleName)
+    {
+        ActorMovie? actorMovie = actorMovies.FirstOrDefault((am) => am.Id == id);
+
+        if (actorMovie != null)
+        {
+            // Create a new ActorMovie with updated role name
+            var updatedActorMovie = new ActorMovie(actorMovie.Id, actorMovie.ActorId, actorMovie.MovieId, roleName);
+            
+            // Remove old and add updated
+            actorMovies.Remove(actorMovie);
+            actorMovies.Add(updatedActorMovie);
+            
+            return await Task.FromResult(updatedActorMovie);
+        }
+
+        return await Task.FromResult<ActorMovie?>(null);
+    }
+
     public async Task<ActorMovie?> Delete(int id)
     {
         ActorMovie? actorMovie = actorMovies.FirstOrDefault((am) => am.Id == id);
