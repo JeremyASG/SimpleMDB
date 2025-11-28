@@ -9,4 +9,5 @@ public interface IMovieRepository
 	public Task<Movie?> ReadMovie(int id);
 	public Task<Movie?> UpdateMovie(int id, Movie newData);
 	public Task<Movie?> DeleteMovie(int id);
+	
 }

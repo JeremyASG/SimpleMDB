@@ -34,6 +34,7 @@ public class MemoryMovieRepository : IMovieRepository
 	public async Task<Movie?> ReadMovie(int id)
 	{
 		Movie? result = db.Movies.FirstOrDefault(m => m.Id == id);
+		
 
 		return await Task.FromResult(result);
 	}
