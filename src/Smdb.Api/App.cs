@@ -25,6 +25,8 @@ router.UseParametrizedRouteMatching();
 router.UseRouter("/api/v1", apiRouter);
 apiRouter.UseRouter("/movies", movieRouter);
 
+
+
 }
 
 }
