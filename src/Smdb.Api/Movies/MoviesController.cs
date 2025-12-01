@@ -31,7 +31,7 @@ var text = (string) props["req.text"]!;
 var movie = JsonSerializer.Deserialize<Movie>(text,
  JsonSerializerOptions.Web);
 var result = await movieService.CreateMovie(movie!);
-await HttpUtils.SendResultResponse(req, res, props, result);
+await JsonUtils.SendJsonResultResponse(req, res, props, result);
 await next();
 }
 // curl -X GET "http://localhost:8080/api/v1/movies/1"
@@ -41,7 +41,7 @@ public async Task ReadMovie(HttpListenerRequest req, HttpListenerResponse res,
 var uParams = (NameValueCollection) props["req.params"]!;
 int id = int.TryParse(uParams["id"]!, out int i) ? i : -1;
 var result = await movieService.ReadMovie(id);
-await HttpUtils.SendResultResponse(req, res, props, result);
+await JsonUtils.SendJsonResultResponse(req, res, props, result);
 await next();
 }
 
@@ -55,7 +55,7 @@ var text = (string) props["req.text"]!;
 var movie = JsonSerializer.Deserialize<Movie>(text,
  JsonSerializerOptions.Web);
 var result = await movieService.UpdateMovie(id, movie!);
-await HttpUtils.SendResultResponse(req, res, props, result);
+await JsonUtils.SendJsonResultResponse(req, res, props, result);
 await next();
 }
 
@@ -66,7 +66,7 @@ public async Task DeleteMovie(HttpListenerRequest req,
 var uParams = (NameValueCollection) props["req.params"]!;
 int id = int.TryParse(uParams["id"]!, out int i) ? i : -1;
 var result = await movieService.DeleteMovie(id);
-await HttpUtils.SendResultResponse(req, res, props, result);
+await JsonUtils.SendJsonResultResponse(req, res, props, result);
 await next();
 }
 
