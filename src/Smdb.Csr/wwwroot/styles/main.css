@@ -1,0 +1,283 @@
+/* ------------------------- */
+/* Global Layout & Typography */
+/* ------------------------- */
+:root {
+    --font: system-ui, sans-serif;
+    --bg: #fafafa;
+    --text: #222;
+    --primary: #2563eb;
+    --danger: #dc2626;
+    --ok: #16a34a;
+    --warn: #ca8a04;
+    --err: #dc2626;
+    --disabled: #9ca3af;
+
+    --border: #ddd;
+    --radius: 6px;
+
+    --card-bg: #fff;
+    --shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+body {
+    margin: 0;
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+}
+
+/* ------------------------- */
+/* Header & Navigation */
+/* ------------------------- */
+header {
+    background: white;
+    padding: 20px;
+    box-shadow: var(--shadow);
+}
+
+header h1 {
+    margin: 0 0 10px 0;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 10px;
+}
+
+nav a.btn {
+    text-decoration: none;
+}
+
+/* ------------------------- */
+/* Containers */
+/* ------------------------- */
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 0 12px;
+}
+
+/* ------------------------- */
+/* Buttons */
+/* ------------------------- */
+.btn {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    background: #eee;
+    color: #222;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    transition: 0.15s ease;
+    user-select: none;
+}
+
+.btn:hover {
+    background: #e5e5e5;
+}
+
+.btn.primary {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+.btn.primary:hover {
+    background: #1d4ed8;
+}
+
+/* used in card actions */
+.btn.danger {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: white;
+}
+.btn.danger:hover {
+    background: #b91c1c;
+}
+
+/* ------------------------- */
+/* Additional Status Button Variants */
+/* ------------------------- */
+.btn.ok {
+    background: var(--ok);
+    border-color: var(--ok);
+    color: white;
+}
+.btn.ok:hover {
+    background: #15803d;
+}
+
+.btn.err {
+    background: var(--err);
+    border-color: var(--err);
+    color: white;
+}
+.btn.err:hover {
+    background: #b91c1c;
+}
+
+.btn.warn {
+    background: var(--warn);
+    border-color: var(--warn);
+    color: white;
+}
+.btn.warn:hover {
+    background: #a16207;
+}
+
+.btn.disabled,
+.btn.disabled:hover {
+    background: var(--disabled);
+    border-color: var(--disabled);
+    color: #fff;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* ------------------------- */
+/* Status Bar */
+/* ------------------------- */
+.status {
+    padding: 10px;
+    background: #f3f4f6;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+}
+
+/* ------------------------- */
+/* Grid (Forms, Cards) */
+/* ------------------------- */
+.grid {
+    display: grid;
+    gap: 16px;
+}
+
+/* Two-column grid for forms at larger screens */
+@media (min-width: 700px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .form-actions {
+        grid-column: span 2;
+    }
+}
+
+/* Fields */
+.field label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.field input,
+.field textarea,
+select {
+    width: 100%;
+    padding: 8px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* ------------------------- */
+/* Cards (Movies List) */
+/* ------------------------- */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.card {
+    background: var(--card-bg);
+    padding: 16px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.card h3 {
+    margin-top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ------------------------- */
+/* Row Actions in Cards */
+/* ------------------------- */
+.row-actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+}
+
+/* ------------------------- */
+/* Badges */
+/* ------------------------- */
+.badge {
+    background: #e5e7eb;
+    padding: 4px 8px;
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+}
+
+/* ------------------------- */
+/* Pagination Controls */
+/* ------------------------- */
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.page-size-container label {
+    margin-right: 6px;
+}
+
+/* ------------------------- */
+/* Tables (View Page) */
+/* ------------------------- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+th {
+    width: 180px;
+    background: #f3f4f6;
+    text-align: left;
+    font-weight: 600;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+/* ------------------------- */
+/* Utility */
+/* ------------------------- */
+.meta {
+    color: #666;
+    font-size: 0.9rem;
+}
