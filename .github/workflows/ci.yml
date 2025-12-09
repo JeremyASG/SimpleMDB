@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/smdb-api
+      IMAGE_NAME: ghcr.io/jeremyasg/smdb-api   # <- TU IMAGEN EN GHCR (minúsculas)
 
     steps:
       # ----------------------------------------------------------------------
@@ -43,7 +43,7 @@ jobs:
       - name: Checkout Shared Library (SharedLibrary)
         uses: actions/checkout@v4
         with:
-          repository: hbruckman/SharedLibrary
+          repository: JeremyASG/SharedLibrary     # 
           token: ${{ secrets.SL_ACCESS_TOKEN }}
           path: projects/SharedLibrary
 
@@ -99,7 +99,8 @@ jobs:
       - name: Deploy to Azure WebApp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'smdbc'                 # <-- CHANGE THIS
+          app-name: 'simple-mdb'                 # 
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           images: ${{ env.IMAGE_NAME }}:latest
           #package: projects/SimpleMDB/publish
+
